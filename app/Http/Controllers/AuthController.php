@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    // Register (jika dibutuhkan)
     public function register(Request $request)
     {
         $request->validate([
@@ -20,7 +19,7 @@ class AuthController extends Controller
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
-            'password' => bcrypt($request->password), // menggunakan Bcrypt
+            'password' => bcrypt($request->password),
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
@@ -31,7 +30,6 @@ class AuthController extends Controller
         ]);
     }
 
-    // Login
     public function login(Request $request)
     {
         $request->validate([
@@ -53,7 +51,6 @@ class AuthController extends Controller
         ]);
     }
 
-    // Logout
     public function logout(Request $request)
     {
         $request->user()->currentAccessToken()->delete();
