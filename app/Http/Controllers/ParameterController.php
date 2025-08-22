@@ -6,13 +6,17 @@ use Illuminate\Http\Request;
 use App\Models\Parameter;
 use App\Models\ParameterDetail;
 use Carbon\Carbon;
+use App\Helpers\ApiResponse;
 
 class ParameterController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return Parameter::with('details')->get();
-    }
+    $perPage = $request->get('per_page', 10);
+    $parameters = Parameter::with('details')->paginate($perPage);
+
+    return ApiResponse::pagination($parameters->items(), 'Parameters retrieved successfully', $parameters);
+  }
 
     public function save(Request $request)
     {
