@@ -5,6 +5,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Parameter extends Model
 {
+    protected $table = 'parameter';
     protected $primaryKey = 'param_code';
     public $incrementing = false;
     protected $keyType = 'string';
