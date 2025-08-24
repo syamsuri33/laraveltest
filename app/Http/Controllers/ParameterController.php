@@ -7,16 +7,37 @@ use App\Models\Parameter;
 use App\Models\ParameterDetail;
 use Carbon\Carbon;
 use App\Helpers\ApiResponse;
+use App\Http\Requests\ParameterRequest;
 
 class ParameterController extends Controller
 {
-    public function index(Request $request)
+    public function index(ParameterRequest $request)
     {
-    $perPage = $request->get('per_page', 10);
-    $parameters = Parameter::with('details')->paginate($perPage);
+        try {
+            $perPage = $request->get('per_page', 10);
+            $search = $request->get('search');
+            $query = Parameter::with('details');
 
-    return ApiResponse::pagination($parameters->items(), 'Parameters retrieved successfully', $parameters);
-  }
+            if ($search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('param_code', 'like', "%{$search}%")
+                        ->orWhere('param_name', 'like', "%{$search}%");
+                });
+                $sortBy = $request->get('sort_by', 'param_code');
+                //$sortOrder = $request->get('sort_order', 'asc');
+                //$query->orderBy($sortBy, $sortOrder);
+                $query->orderBy($sortBy);
+            }
+
+            $parameters = $query->paginate($perPage);
+
+            return ApiResponse::pagination($parameters->items(), 'Parameters retrieved successfully', $parameters);
+        } catch (\Exception $e) {
+            return ApiResponse::error('Failed to retrieve parameters', 500, [
+                'error' => $e->getMessage()
+            ]);
+        }
+    }
 
     public function save(Request $request)
     {

@@ -22,25 +22,29 @@ class ApiResponse
 
     public static function error($message = 'Error', $code = 400)
     {
-        return response()->json([
+        $response = [
             'data' => null,
             'message' => $message,
             'status' => 'error'
-        ], $code);
+        ];
+
+        return response()->json($response, $code);
     }
 
     public static function pagination($data, $message = 'Success', $paginator)
     {
-        return response()->json([
+        $response = [
             'data' => $data,
             'message' => $message,
+            'status' => 'success',
             'pageCount' => $paginator->lastPage(),
             'pageNo' => $paginator->currentPage(),
             'pageSize' => $paginator->perPage(),
             'rowCount' => $paginator->total(),
-            'rowEnd' => $paginator->lastItem(),
             'rowStart' => $paginator->firstItem(),
-            'status' => 'success'
-        ], 200);
+            'rowEnd' => $paginator->lastItem(),
+        ];
+
+        return response()->json($response, 200);
     }
 }
